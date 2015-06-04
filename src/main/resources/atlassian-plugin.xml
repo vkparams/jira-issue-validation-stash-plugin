@@ -1,0 +1,29 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}"
+	name="${project.name}" plugins-version="2">
+
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo-ticket.png</param>
+	</plugin-info>
+
+	<component-import key="applicationPropsService" interface="com.atlassian.stash.server.ApplicationPropertiesService" />
+	<component-import key="applicationLinkService" interface="com.atlassian.applinks.api.ApplicationLinkService" />
+    <component-import key="commitService" interface="com.atlassian.stash.commit.CommitService" />
+	<component-import key="entityLinkService" interface="com.atlassian.applinks.api.EntityLinkService" />
+
+	<repository-hook key="commit-message-issue-enforcer"
+		name="Commit Log Message JIRA® Issue Reference Enforcer" class="com.teslamotors.stash.logchecker.CommitLogMessagePreReceiveHook">
+		<description>Enforces that all commits contain a (valid) Jira issue reference or explicit exemption (via the string "#noissue").</description>
+		<icon>images/pluginLogo-ticket.png</icon>
+
+		<config-form name="Commit Log Message Enforcer Hook Config"
+			key="commit-message-config-pre-receive">
+			<view>com.teslamotors.stash.hook.issuerefs.commitMessage</view>
+			<directory location="/static/" />
+		</config-form>
+        <validator>com.teslamotors.stash.logchecker.SettingsValidator</validator>
+	</repository-hook>
+</atlassian-plugin>

@@ -1,0 +1,142 @@
+{namespace com.teslamotors.stash.hook.issuerefs}
+
+/**
+ * @param config
+ * @param? errors
+ */
+{template .commitMessage}
+	{call aui.form.checkboxField}
+	    {param id: 'commitMessageConfig1' /}
+        {param legendContent: 'Message contents' /}
+	    {param fields: [
+	        [ 'id' : 'checkJiraExistenceEnabled',
+	          'labelText' : 'Check Jira for issue existence',
+	          'isChecked' : $config and $config.checkJiraExistenceEnabled,
+	          'descriptionText' : 'Makes sure, not only that an issue reference exists in the commit message, but also that that issue already exists in Jira.',
+	          'errorTexts' : $errors ? $errors['checkJiraExistenceEnabled'] : null]
+	    ]/}
+	{/call}
+
+	{call aui.form.checkboxField}
+	    {param id: 'commitMessageConfig7' /}
+        {param legendContent: 'Jira connection' /}
+	    {param fields: [
+	        [ 'id' : 'jiraApplicationLinkEnabled',
+	          'labelText' : 'Use Application Link to connect to Jira',
+	          'isChecked' : $config and $config.jiraApplicationLinkEnabled,
+	          'descriptionText' : 'Use an Application Link to connect to Jira, instead of the login information below.',
+	          'errorTexts' : $errors ? $errors['jiraApplicationLinkEnabled'] : null]
+	    ]/}
+	{/call}
+	
+    {call aui.form.textField}
+        {param id: 'jiraBaseUrl' /}
+        {param value: $config['jiraBaseUrl'] /}
+        {param labelContent}
+            {stash_i18n('crap4.web.test.hook.config.label', 'Jira URL')}
+        {/param}
+        {param descriptionText: 'Obviated by Application Link. Base URL for Jira server (e.g. "https://jira.atlassian.com"). No trailing slash.' /}
+        {param size: 80 /}
+        {param errorTexts: $errors ? $errors['jiraBaseUrl'] : null /}
+    {/call}
+	
+    {call aui.form.textField}
+        {param id: 'jiraUsername' /}
+        {param value: $config['jiraUsername'] /}
+        {param labelContent}
+            {stash_i18n('crap4.web.test.hook.config.label', 'Jira username')}
+        {/param}
+        {param descriptionText: 'Obviated by Application Link. Jira username for HTTP Basic authentication.' /}
+        {param size: 80 /}
+        {param errorTexts: $errors ? $errors['jiraUsername'] : null /}
+    {/call}
+
+    {call aui.form.passwordField}
+        {param id: 'jiraPassword' /}
+        {param value: $config['jiraPassword'] /}
+        {param labelContent}
+            {stash_i18n('crap4.web.test.hook.config.label', 'Jira password')}
+        {/param}
+        {param descriptionText: 'Obviated by Application Link. Jira password for HTTP Basic authentication.' /}
+        {param size: 80 /}
+        {param errorTexts: $errors ? $errors['jiraPassword'] : null /}
+    {/call}
+
+	{call aui.form.checkboxField}
+	    {param id: 'commitMessageConfig6' /}
+        {param legendContent: 'Exemptions' /}
+	    {param fields: [
+	        [ 'id' : 'exemptMergeCommits',
+	          'labelText' : 'Exempt merge commits',
+	          'isChecked' : $config and $config.exemptMergeCommits,
+	          'descriptionText' : 'Merge commit messages are often populated automatically, so enforcing the presence of issue references in these might be a burden for developers.',
+	          'errorTexts' : $errors ? $errors['exemptMergeCommits'] : null],
+	        [ 'id' : 'allowExemptionKeyword',
+	          'labelText' : 'Allow exemption keyword',
+	          'isChecked' : $config and $config.allowExemptionKeyword,
+	          'descriptionText' : 'Allows a regex to be specified for exempting commits from the issue reference requirement.',
+	          'errorTexts' : $errors ? $errors['allowExemptionKeyword'] : null]
+	    ]/}
+	{/call}
+
+    {call aui.form.textField}
+        {param id: 'jiraExemptionRegex' /}
+        {param value: $config['jiraExemptionRegex'] ? $config['jiraExemptionRegex'] : '#noissue\\b' /}
+        {param labelContent}
+            {stash_i18n('crap4.web.test.hook.config.label', 'Exemption pattern')}
+        {/param}
+        {param descriptionText: stash_i18n('crap4.web.test.hook.config.description', 'Regex to match against a commit message to determine whether to skip check.') /}
+        {param size: 80 /}
+        {param errorTexts: $errors ? $errors['jiraExemptionRegex'] : null /}
+    {/call}
+
+	{call aui.form.checkboxField}
+	    {param id: 'commitMessageConfig2' /}
+        {param legendContent: 'Moved issues' /}
+	    {param fields: [
+	        [ 'id' : 'checkForIssueMoveEnabled',
+	          'labelText' : 'Check for moved issue',
+	          'isChecked' : $config and $config.checkForIssueMoveEnabled,
+	          'descriptionText' : 'If an issue could not be found in Jira, performs a query to see if it has been moved.',
+	          'errorTexts' : $errors ? $errors['checkForIssueMoveEnabled'] : null],
+	        [ 'id' : 'failOnIssueMoveEnabled',
+	          'labelText' : 'Fail on moved issue',
+	          'isChecked' : $config and $config.failOnIssueMoveEnabled,
+	          'descriptionText' : 'Rejects the push anyway if the referenced issue has been moved. Disabling the "Check for moved issue" option would have the same effect in that moved issues reject the commit, but this option prints an explanation to the client that the failure is due to a move. Otherwise the rejection would be indistinguishable form a non-existent issue.',
+	          'errorTexts' : $errors ? $errors['failOnIssueMoveEnabled'] : null]
+	    ]/}
+	{/call}
+
+	{call aui.form.checkboxField}
+	    {param id: 'commitMessageConfig3' /}
+        {param legendContent: 'Console feedback' /}
+	    {param fields: [
+	        [ 'id' : 'printLogMessageEnabled',
+	          'labelText' : 'Print log message',
+	          'isChecked' : $config and $config.printLogMessageEnabled,
+	          'descriptionText' : 'Prints the full log message to the client console when a commit is rejected. The actual rejection message could be hard to find among large commit messages, so you may want to disable this.',
+	          'errorTexts' : $errors ? $errors['printLogMessageEnabled'] : null]
+	    ]/}
+	{/call}
+	
+	{call aui.form.textareaField}
+        {param id: 'watershedCommitLogMessageEnforcement' /}
+        {param labelContent: 'Watershed Refs' /}
+        {param descriptionText: 'Ancestor commits from which to start enforcing Jira issue references in each log message. Earlier commits shall be "grandfathered" in. Multiple refs may be specified, delimited by the "space" character. If empty, the hook is applied to all refs.' /}
+        {param value: $config['watershedCommitLogMessageEnforcement'] /}
+        {param rows: 4 /}
+        {param cols: 80 /}
+        {param errorTexts: $errors ? $errors['watershedCommitLogMessageEnforcement'] : null /}
+    {/call}
+    
+	{call aui.form.textareaField}
+        {param id: 'branchNamespaces' /}
+        {param labelContent: 'Branch Namespace Enforcement' /}
+        {param descriptionText: 'In addition to watershed commits, restrict enforcement to branches under certain namespaces. Multiple branch prefixes may be specified, delimited by whitespace. The string "refs/heads/" will be appended to the string, and matched as a prefix against the target branch. Recommended to end each string with a forward-slash ("/"). If no namespaces are specified, matches all branches.' /}
+        {param value: $config['branchNamespaces'] ? $config['branchNamespaces'] : '' /}
+        {param rows: 4 /}
+        {param cols: 80 /}
+        {param errorTexts: $errors ? $errors['branchNamespaces'] : null /}
+    {/call}
+	
+{/template}
